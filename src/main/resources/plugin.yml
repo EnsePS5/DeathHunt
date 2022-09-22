@@ -1,0 +1,10 @@
+name: DeathHuntPlugin
+version: '${project.version}'
+main: me.exaraton.citioxs.deathhunt.DeathHuntPlugin
+api-version: 1.18
+authors: [ Ense ]
+description: Each player gets another player as a target to kill.
+commands:
+  runDH:
+    description: runs DeathHunt with default settings.
+    usage: /<command>
