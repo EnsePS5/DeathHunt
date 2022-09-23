@@ -13,3 +13,5 @@ And remember, if you have a bad day, you will get some extra items to fight back
 Have a good time!
 
 ~Ense
+
+ PS: Keep in mind I made it for fun and surly is not perfectly optimized and may contains some bugs :)
