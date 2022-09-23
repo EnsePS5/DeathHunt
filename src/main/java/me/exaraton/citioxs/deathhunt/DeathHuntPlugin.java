@@ -619,14 +619,14 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
         EnchantmentStorageMeta sharpnessMeta = (EnchantmentStorageMeta) sharpness.getItemMeta();
 
         assert sharpnessMeta != null;
-        sharpnessMeta.addStoredEnchant(Enchantment.DAMAGE_ALL, (int)(Math.random() * 7), false);
+        sharpnessMeta.addStoredEnchant(Enchantment.DAMAGE_ALL, (int)((Math.random()+1) * 5), false);
         sharpness.setItemMeta(sharpnessMeta);
         //Protection
         ItemStack protection = new ItemStack(Material.ENCHANTED_BOOK ,(int)(Math.random() * 1.8));
         EnchantmentStorageMeta protectionMeta = (EnchantmentStorageMeta) protection.getItemMeta();
 
         assert protectionMeta != null;
-        protectionMeta.addStoredEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, (int)(Math.random() * 7), false);
+        protectionMeta.addStoredEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, (int)((Math.random()+1) * 6), false);
         protection.setItemMeta(protectionMeta);
 
         //Glowing effect on slime in glow stone
@@ -637,7 +637,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
         glowingSlime.setCollidable(false);
         glowingSlime.setInvulnerable(true);
         glowingSlime.setSize(1);
-        glowingSlime.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 4800,1));
+        glowingSlime.addPotionEffect(new PotionEffect(PotionEffectType.GLOWING, 4800,3));
 
         chestInventory.addItem(
                 new ItemStack(Material.ENDER_PEARL, (int)(Math.random() * 4)),
