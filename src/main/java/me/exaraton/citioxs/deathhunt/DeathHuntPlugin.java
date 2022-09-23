@@ -64,6 +64,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
     public static boolean IS_GAME_ON = false;
     public static boolean IS_OVERTIME = false;
     public static boolean HAS_LAST_DIED = false;
+    public static boolean HAS_CHEST_OPENED = false;
 
     public final ArrayList<PlayerProperties> currentPlayersProperties = new ArrayList<>();
     public final ArrayList<Player> currentPlayers = new ArrayList<>();
@@ -131,15 +132,17 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onChestOpen(InventoryOpenEvent inventoryOpenEvent){
 
-        if (inventoryOpenEvent.getInventory().getType().equals(InventoryType.CHEST) && (timet[0]/60) <= 10){
+        if (inventoryOpenEvent.getInventory().getType().equals(InventoryType.CHEST) && !HAS_CHEST_OPENED){
 
             Bukkit.broadcastMessage(ChatColor.GOLD + "Loot chest has been opened! Better luck next time!");
 
             Location pillarLoc = inventoryOpenEvent.getPlayer().getLocation();
-            Bukkit.dispatchCommand(console, "fill " + (int)(pillarLoc.getX() - 5) + " " + (int)(pillarLoc.getY() + 43) + " " + (int)(pillarLoc.getZ() - 5) + " " +
-                    (int)(pillarLoc.getX() + 5) + " " + (int)(pillarLoc.getY() + 51) + " " + (int)(pillarLoc.getZ() + 5) + " minecraft:air replace minecraft:glowstone");
+            Bukkit.dispatchCommand(console, "fill " + (int)(pillarLoc.getX() - 5) + " " + (int)(pillarLoc.getY() + 40) + " " + (int)(pillarLoc.getZ() - 5) + " " +
+                    (int)(pillarLoc.getX() + 5) + " " + (int)(pillarLoc.getY() + 53) + " " + (int)(pillarLoc.getZ() + 5) + " minecraft:air replace minecraft:glowstone");
 
             glowingSlime.setHealth(0);
+
+            HAS_CHEST_OPENED = true;
         }
 
     }
@@ -364,7 +367,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
             }
             if (playersPoints.get(playerRespawnEvent.getPlayer()) < -3) {
                 Objects.requireNonNull(playerRespawnEvent.getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(
-                        Objects.requireNonNull(playerRespawnEvent.getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue() + Math.random() * 1.5);
+                        Objects.requireNonNull(playerRespawnEvent.getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue() + Math.random() + 1.0);
             }
 
         }
@@ -415,7 +418,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
                     if (playersPoints.get(currentPlayersProperty.getHunter().getPlayer()) >= 12 ){
 
                         Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(
-                                Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue() + Math.random() * 1.5);
+                                Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue() + Math.random() + 1.0);
 
                         Bukkit.broadcastMessage(currentPlayersProperty.getHunter().getDisplayName() + " base damage has " + ChatColor.DARK_PURPLE + " INCREASED " + ChatColor.WHITE + "to " +
                                 ChatColor.DARK_PURPLE + Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue());
@@ -431,10 +434,10 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
                             currentPlayersProperty.getTarget().getDisplayName());
 
                     Objects.requireNonNull(Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer()).getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(
-                            Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue() - 2.0);
+                            Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue() - 1.0);
 
                     Objects.requireNonNull(Objects.requireNonNull(currentPlayersProperty.getTarget().getPlayer()).getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(
-                            Objects.requireNonNull(currentPlayersProperty.getTarget().getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue() + 2.0);
+                            Objects.requireNonNull(currentPlayersProperty.getTarget().getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue() + 1.0);
 
                     //Adding strength potion
                     ItemStack potion = new ItemStack(Material.POTION);
@@ -682,6 +685,8 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
         }
 
         getServer().broadcastMessage(ChatColor.GOLD + "Loot chest has been dropped! Look for the arrow!");
+
+        HAS_CHEST_OPENED = false;
     }
     //In minutes
     public void changeTime(int time){

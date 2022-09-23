@@ -6,7 +6,7 @@
 
     <groupId>me.exaraton.citioxs</groupId>
     <artifactId>DeathHunt</artifactId>
-    <version>1.4.5.2_LOOT_CHEST_TIMER_SYNC</version>
+    <version>1.4.6_LOOT_CHEST_TIMER_SYNC</version>
     <packaging>jar</packaging>
 
     <name>DeathHunt</name>
