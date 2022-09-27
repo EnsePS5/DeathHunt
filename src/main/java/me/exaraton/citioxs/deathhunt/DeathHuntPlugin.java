@@ -132,13 +132,16 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
     @EventHandler
     public void onChestOpen(InventoryOpenEvent inventoryOpenEvent){
 
-        if (inventoryOpenEvent.getInventory().getType().equals(InventoryType.CHEST) && !HAS_CHEST_OPENED){
+        if (inventoryOpenEvent.getInventory().getType().equals(InventoryType.CHEST) && !HAS_CHEST_OPENED && timet[0] <= 660){
 
             Bukkit.broadcastMessage(ChatColor.GOLD + "Loot chest has been opened! Better luck next time!");
 
             Location pillarLoc = inventoryOpenEvent.getPlayer().getLocation();
-            Bukkit.dispatchCommand(console, "fill " + (int)(pillarLoc.getX() - 5) + " " + (int)(pillarLoc.getY() + 40) + " " + (int)(pillarLoc.getZ() - 5) + " " +
-                    (int)(pillarLoc.getX() + 5) + " " + (int)(pillarLoc.getY() + 53) + " " + (int)(pillarLoc.getZ() + 5) + " minecraft:air replace minecraft:glowstone");
+            Bukkit.dispatchCommand(console, "fill " + (int)(pillarLoc.getX() - 6) + " " + (int)(pillarLoc.getY() + 39) + " " + (int)(pillarLoc.getZ() - 6) + " " +
+                    (int)(pillarLoc.getX() + 6) + " " + (int)(pillarLoc.getY() + 54) + " " + (int)(pillarLoc.getZ() + 6) + " minecraft:air replace minecraft:glowstone");
+
+            Bukkit.dispatchCommand(console, "fill " + (int)(pillarLoc.getX() + 6) + " " + (int)(pillarLoc.getY() + 39) + " " + (int)(pillarLoc.getZ() - 6) + " " +
+                    (int)(pillarLoc.getX() - 6) + " " + (int)(pillarLoc.getY() + 54) + " " + (int)(pillarLoc.getZ() - 6) + " minecraft:air replace minecraft:glowstone");
 
             glowingSlime.setHealth(0);
 
@@ -199,7 +202,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
 
             scoreboard = scoreboardManager.getNewScoreboard();
 
-            if (isTeamed) {
+            if (!isTeamed) {
 
                 objective = scoreboard.registerNewObjective("Kills", "dummy", "Kills");
                 objective.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -236,6 +239,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
             Bukkit.dispatchCommand(console, "gamerule doDaylightCycle true");
             Bukkit.dispatchCommand(console, "gamerule spawnRadius 500");
             Bukkit.dispatchCommand(console, "effect give @a minecraft:saturation 5 2 true");
+            Bukkit.dispatchCommand(console, "experience add @a 1000");
 
             Bukkit.broadcastMessage(ChatColor.YELLOW + "" + ChatColor.ITALIC + "BlockShuffle settings: ");
             Bukkit.broadcastMessage(ChatColor.YELLOW + "" + ChatColor.ITALIC + "night vision: true/particle off");
@@ -403,6 +407,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
 
                     if (IS_OVERTIME){
                         HAS_LAST_DIED = true;
+                        IS_OVERTIME = false;
                     }
 
                     Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer()).getInventory().addItem(new ItemStack(Material.COOKED_BEEF, (int)(Math.random() * 9)));
@@ -439,11 +444,12 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
                     Bukkit.broadcastMessage(currentPlayersProperty.getHunter().getDisplayName() + " was killed by his " + ChatColor.RED + ChatColor.BOLD + "Target: " +
                             currentPlayersProperty.getTarget().getDisplayName());
 
-                    Objects.requireNonNull(Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer()).getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(
-                            Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue() - 1.0);
+                    //TODO check how it works
+                    /*Objects.requireNonNull(Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer()).getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(
+                            Objects.requireNonNull(currentPlayersProperty.getHunter().getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue() - 0.2);
 
                     Objects.requireNonNull(Objects.requireNonNull(currentPlayersProperty.getTarget().getPlayer()).getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(
-                            Objects.requireNonNull(currentPlayersProperty.getTarget().getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue() + 1.0);
+                            Objects.requireNonNull(currentPlayersProperty.getTarget().getPlayer().getAttribute(Attribute.GENERIC_MAX_HEALTH)).getValue() + 0.2);*/
 
                     //Adding strength potion
                     ItemStack potion = new ItemStack(Material.POTION);
@@ -463,17 +469,25 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
         }
     }
 
+
+
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent playerQuitEvent){
 
         if (IS_GAME_ON)
         {
+            PlayerProperties temp;
+            int index = 0;
             for (PlayerProperties properties : currentPlayersProperties){
                 if (properties.getTarget().equals(playerQuitEvent.getPlayer())){
                     playersPoints.put(properties.getHunter(), playersPoints.get(properties.getHunter()) + 1);
                     playersScore.get(properties.getHunter()).setScore(playersScore.get(properties.getHunter()).getScore() + 1);
 
                     setTargetToHunter(properties, currentPlayers);
+                    if (playerQuitEvent.getPlayer().equals(properties.getHunter())){
+                        temp = currentPlayersProperties.get(currentPlayersProperties.indexOf(properties));
+                        currentPlayersProperties.remove(temp);
+                    }
                 }
             }
             currentPlayers.remove(playerQuitEvent.getPlayer());
@@ -629,25 +643,25 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
 
         //Enchanted Books
         //Sharpness
-        ItemStack sharpness = new ItemStack(Material.ENCHANTED_BOOK ,(int)(Math.random() * 1.8));
+        ItemStack sharpness = new ItemStack(Material.ENCHANTED_BOOK);
         EnchantmentStorageMeta sharpnessMeta = (EnchantmentStorageMeta) sharpness.getItemMeta();
 
         assert sharpnessMeta != null;
-        sharpnessMeta.addStoredEnchant(Enchantment.DAMAGE_ALL, (int)((Math.random()+1) * 5), false);
+        sharpnessMeta.addStoredEnchant(Enchantment.DAMAGE_ALL, (int)((Math.random()+1) * 4), false);
         sharpness.setItemMeta(sharpnessMeta);
         //Protection
-        ItemStack protection = new ItemStack(Material.ENCHANTED_BOOK ,(int)(Math.random() * 1.8));
+        ItemStack protection = new ItemStack(Material.ENCHANTED_BOOK);
         EnchantmentStorageMeta protectionMeta = (EnchantmentStorageMeta) protection.getItemMeta();
 
         assert protectionMeta != null;
-        protectionMeta.addStoredEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, (int)((Math.random()+1) * 6), false);
+        protectionMeta.addStoredEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, (int)((Math.random()+1) * 4), false);
         protection.setItemMeta(protectionMeta);
         //Power
-        ItemStack power = new ItemStack(Material.ENCHANTED_BOOK ,(int)(Math.random() * 1.8));
+        ItemStack power = new ItemStack(Material.ENCHANTED_BOOK);
         EnchantmentStorageMeta powerMeta = (EnchantmentStorageMeta) power.getItemMeta();
 
         assert powerMeta != null;
-        powerMeta.addStoredEnchant(Enchantment.ARROW_DAMAGE, (int)((Math.random()+1) * 3), false);
+        powerMeta.addStoredEnchant(Enchantment.ARROW_DAMAGE, (int)((Math.random()+1) * 2), false);
         power.setItemMeta(powerMeta);
 
         //Glowing effect on slime in glow stone
@@ -668,6 +682,9 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
                         :
                         new ItemStack(Material.DIAMOND_BLOCK),
                 new ItemStack(Material.CHIPPED_ANVIL, (int)(Math.random() * 1.8)),
+                new ItemStack(Material.BONE, (int)(Math.random() * 5)),
+                new ItemStack(Material.WOLF_SPAWN_EGG, (int)(Math.random() * 2.1)),
+                new ItemStack(Material.LAVA_BUCKET),
                 sharpness, protection, power
         );
 
