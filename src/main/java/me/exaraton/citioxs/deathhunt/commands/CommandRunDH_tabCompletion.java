@@ -20,6 +20,7 @@ public class CommandRunDH_tabCompletion implements TabCompleter {
             result.add("newPlace");
             result.add("setTarget");
             result.add("setTime");
+            result.add("team");
             result.add("terminate");
         }
         if (args.length == 2){

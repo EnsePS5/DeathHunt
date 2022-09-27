@@ -23,6 +23,9 @@ public class CommandRunDH implements CommandExecutor {
             {
                 deathHuntPlugin.runDH();
             }
+            else if (args[0].equals("teams")){
+                //TODO add team mode
+            }
             else if (args[0].equals("setTarget"))
             {
                 //TODO setTarget to Hunter
@@ -38,8 +41,9 @@ public class CommandRunDH implements CommandExecutor {
             else if (args[0].equals("newPlace"))
             {
                 if (deathHuntPlugin.gameBorder == null){
-                    sender.sendMessage(ChatColor.DARK_RED + "given command is incorrect");
+                    sender.sendMessage(ChatColor.DARK_RED + "given command is invalid. Game border is not set yet");
                 }
+                else
                 deathHuntPlugin.newPlace();
             }
             else

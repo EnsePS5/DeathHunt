@@ -151,7 +151,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
     public void onDropItem(PlayerDropItemEvent playerDropItemEvent){
 
         if (playerDropItemEvent.getItemDrop().getItemStack().isSimilar(compassToTarget)) {
-            Bukkit.dispatchCommand(console, "effect give @a minecraft:night_vision 2520 1 true");
+            Bukkit.dispatchCommand(console, "effect give " + playerDropItemEvent.getPlayer().getDisplayName() + " minecraft:night_vision 2520 1 true");
             playerDropItemEvent.setCancelled(true);
         }
 
@@ -340,14 +340,11 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
 
                 timet[0] = timet[0] - 1;
                 delay[0] = delay[0] - 1000;
-                //TODO do something when time goes of
 
             },1L, 20L);
         }
 
     }
-
-    //TODO REGAIN NIGHT VISION
 
     @EventHandler
     public void onPlayerRespawn(PlayerRespawnEvent playerRespawnEvent){
@@ -369,6 +366,8 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
                 Objects.requireNonNull(playerRespawnEvent.getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).setBaseValue(
                         Objects.requireNonNull(playerRespawnEvent.getPlayer().getAttribute(Attribute.GENERIC_ATTACK_DAMAGE)).getValue() + Math.random() + 1.0);
             }
+
+            Bukkit.dispatchCommand(console, "effect give " + playerRespawnEvent.getPlayer().getDisplayName() + " minecraft:night_vision 2520 1 true");
 
         }
 
@@ -580,6 +579,13 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
         Bukkit.dispatchCommand(console, "gamerule keepInventory false");
         Bukkit.dispatchCommand(console, "gamerule doWeatherCycle true");
 
+
+        for (Player player : currentPlayers) {
+            //player.sendTitle(ChatColor.RED + "Game Terminated!", null, 5, 60, 15);
+            Objects.requireNonNull(player.getAttribute(Attribute.GENERIC_MAX_HEALTH)).setBaseValue(20);
+        }
+
+
         currentPlayers.clear();
         currentPlayersProperties.clear();
 
@@ -605,13 +611,14 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
         do {
             chestSpawnLoc = chestSpawnLoc.add(0,-1,0);
         }while (chestSpawnLoc.getBlock().getType().isAir() && chestSpawnLoc.getBlock().getType() != Material.CAVE_AIR);
+        chestSpawnLoc = chestSpawnLoc.add(0,1,0);
 
         Block blockToSpawnOn = chestSpawnLoc.getBlock();
         chestSpawnLoc.getBlock().setType(Material.CHEST);
         Chest chest = (Chest)blockToSpawnOn.getState();
         Inventory chestInventory = chest.getInventory();
 
-        //TODO THINGS TO ADD TO CHEST (EKSCALIBUR, ROBIN"S HOOD BOW)
+        //TODO THINGS TO ADD TO CHEST (EXCALIBUR, ROBIN"S HOOD BOW)
 
         //Enchanted Books
         //Sharpness
@@ -646,13 +653,11 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
                         new ItemStack(Material.TOTEM_OF_UNDYING, (int)(Math.random() * 1.5))
                         :
                         new ItemStack(Material.DIAMOND_BLOCK),
-                new ItemStack(Material.CHIPPED_ANVIL, (int)(Math.random() * 1.5)),
+                new ItemStack(Material.CHIPPED_ANVIL, (int)(Math.random() * 1.8)),
                 sharpness, protection
         );
 
         System.out.println("Chest spawn at -> " + chestSpawnLoc);
-
-        //TODO SPAWN ARROW ABOVE CHEST
 
         chestSpawnLoc.add(0,50,0);
 
