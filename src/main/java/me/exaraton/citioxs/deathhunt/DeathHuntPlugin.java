@@ -157,7 +157,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
 
     }
 
-    public void runDH(){
+    public void runDH(boolean isTeamed){
 
         if (!IS_GAME_ON){ //Runs only at the beginning of the game
             IS_GAME_ON = true;
@@ -199,24 +199,31 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
 
             scoreboard = scoreboardManager.getNewScoreboard();
 
-            objective = scoreboard.registerNewObjective("Kills", "dummy", "Kills");
-            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-            objective.setDisplayName(ChatColor.DARK_RED + "DeathHunt/Kills");
+            if (isTeamed) {
 
-            ArrayList<Score> scores = new ArrayList<>();
-            int index = 0;
+                objective = scoreboard.registerNewObjective("Kills", "dummy", "Kills");
+                objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                objective.setDisplayName(ChatColor.DARK_RED + "DeathHunt/Kills");
 
-            for (Player player : currentPlayers){
+                ArrayList<Score> scores = new ArrayList<>();
+                int index = 0;
 
-                scores.add(objective.getScore(ChatColor.AQUA + player.getDisplayName() + ChatColor.GOLD + " -> "));
+                for (Player player : currentPlayers) {
 
-                playersScore.put(player, scores.get(index));
-                playersPoints.put(player,0);
+                    scores.add(objective.getScore(ChatColor.AQUA + player.getDisplayName() + ChatColor.GOLD + " -> "));
 
-                index++;
+                    playersScore.put(player, scores.get(index));
+                    playersPoints.put(player, 0);
 
-                playersScore.get(player).setScore(0);
-                player.setScoreboard(scoreboard);
+                    index++;
+
+                    playersScore.get(player).setScore(0);
+                    player.setScoreboard(scoreboard);
+                }
+
+            }else {
+
+                //TODO team board settings and creation
             }
 
             //Command setter
@@ -635,6 +642,13 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
         assert protectionMeta != null;
         protectionMeta.addStoredEnchant(Enchantment.PROTECTION_ENVIRONMENTAL, (int)((Math.random()+1) * 6), false);
         protection.setItemMeta(protectionMeta);
+        //Power
+        ItemStack power = new ItemStack(Material.ENCHANTED_BOOK ,(int)(Math.random() * 1.8));
+        EnchantmentStorageMeta powerMeta = (EnchantmentStorageMeta) power.getItemMeta();
+
+        assert powerMeta != null;
+        powerMeta.addStoredEnchant(Enchantment.ARROW_DAMAGE, (int)((Math.random()+1) * 3), false);
+        power.setItemMeta(powerMeta);
 
         //Glowing effect on slime in glow stone
         glowingSlime = (Slime) Objects.requireNonNull(getServer().getWorld("world")).spawnEntity(chestSpawnLoc, EntityType.SLIME);
@@ -654,7 +668,7 @@ public final class DeathHuntPlugin extends JavaPlugin implements Listener {
                         :
                         new ItemStack(Material.DIAMOND_BLOCK),
                 new ItemStack(Material.CHIPPED_ANVIL, (int)(Math.random() * 1.8)),
-                sharpness, protection
+                sharpness, protection, power
         );
 
         System.out.println("Chest spawn at -> " + chestSpawnLoc);

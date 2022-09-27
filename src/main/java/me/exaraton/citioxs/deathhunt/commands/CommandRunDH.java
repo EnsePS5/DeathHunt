@@ -21,10 +21,10 @@ public class CommandRunDH implements CommandExecutor {
         {
             if (args.length == 0)
             {
-                deathHuntPlugin.runDH();
+                deathHuntPlugin.runDH(false);
             }
             else if (args[0].equals("teams")){
-                //TODO add team mode
+                deathHuntPlugin.runDH(true);
             }
             else if (args[0].equals("setTarget"))
             {
